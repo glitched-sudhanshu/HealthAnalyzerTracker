@@ -1,6 +1,9 @@
 package com.example.healthanalyzertracker.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +17,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,7 +27,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,6 +40,10 @@ import com.example.healthanalyzertracker.ui.theme.AudioWideFont
 import com.example.healthanalyzertracker.ui.theme.BackgroundGrey
 import com.example.healthanalyzertracker.ui.theme.DarkPaleBlue
 import com.example.healthanalyzertracker.ui.theme.LightPaleBlue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun HeartScreen() {
@@ -70,13 +80,14 @@ fun HeartScreen() {
     mutableStateOf("Select your No. of major vessels")
   }
   var thal by remember {
-    mutableStateOf("Select your Thal")
+    mutableStateOf("Select your Thalassemia")
   }
   var age = 0
   var chestPain = 0
   var highBp = 0
   var lowBp = 0
   var maxHeartRate = 0
+  val context = LocalContext.current
 
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -197,23 +208,59 @@ fun HeartScreen() {
     CustomDropDownMenu(
       suggestions = listOf("Normal", "Fixed Defect"),
       selectedText = thal,
-      labelText = "Thal"
+      labelText = "Thalassemia "
     ) {
       thal = it
     }
-
+    Spacer(modifier = Modifier.height(30.dp))
+    Spacer(modifier = Modifier.height(30.dp))
     Text(
       text = "Submit",
       modifier = Modifier
         .fillMaxWidth()
         .align(Alignment.CenterHorizontally)
         .background(color = LightPaleBlue, RoundedCornerShape(15.dp))
+        .clickable(
+          onClick = {
+            if(!checkIfValid(age, gender, chestPain, lowBp, highBp, fastingBloodSugar, cardiographicResult, maxHeartRate, majorVessels, thal)){
+
+              Toast
+                .makeText(context, "Fill all fields!", Toast.LENGTH_LONG)
+                .show()
+            }
+            else CoroutineScope(Dispatchers.Main).launch {
+              delay(5000)
+              Toast
+                .makeText(context, "Error while calling API. Something went wrong!", Toast.LENGTH_LONG)
+                .show()
+            }
+          },
+          interactionSource = remember { MutableInteractionSource() },
+          indication = rememberRipple(bounded = true)
+        )
         .padding(vertical = 10.dp),
       fontFamily = AudioWideFont.fontFamily,
+      textAlign = TextAlign.Center,
       fontWeight = FontWeight.Bold,
       color = Color.White,
     )
   }
+}
+
+private fun checkIfValid(
+  age: Int,
+  gender: String,
+  chestPain: Int,
+  lowBp: Int,
+  highBp: Int,
+  fastingBloodSugar: String,
+  cardiographicResult: String,
+  maxHeartRate: Int,
+  majorVessels: String,
+  thal: String
+): Boolean {
+  if(age==0 || gender == "Select your gender" || chestPain == 0 || lowBp == 0 || highBp == 0 || maxHeartRate == 0 || fastingBloodSugar == "Select your Fasting Blood Sugar" || cardiographicResult == "Select your Electrocardiographic Result" || majorVessels == "Select your No. of major vessels" || thal == "Select your Thalassemia") return false
+  return true
 }
 
 @Preview
