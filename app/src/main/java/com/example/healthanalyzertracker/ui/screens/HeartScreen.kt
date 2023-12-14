@@ -1,8 +1,6 @@
 package com.example.healthanalyzertracker.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,11 +11,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDownCircle
-import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,12 +28,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.healthanalyzertracker.ui.components.BottomSheet
+import com.example.healthanalyzertracker.ui.components.BottomSheetDropDown
 import com.example.healthanalyzertracker.ui.components.CustomDropDownMenu
 import com.example.healthanalyzertracker.ui.theme.AudioWideFont
 import com.example.healthanalyzertracker.ui.theme.BackgroundGrey
 import com.example.healthanalyzertracker.ui.theme.DarkPaleBlue
 import com.example.healthanalyzertracker.ui.theme.LightPaleBlue
-import com.example.healthanalyzertracker.ui.theme.PlaypenSans
 
 @Composable
 fun HeartScreen() {
@@ -87,7 +83,8 @@ fun HeartScreen() {
     modifier = Modifier
       .background(color = BackgroundGrey)
       .padding(horizontal = 16.dp, vertical = 12.dp)
-      .fillMaxSize(),
+      .fillMaxSize()
+      .verticalScroll(rememberScrollState()),
   ) {
     if (showAgeBottomSheet) {
       BottomSheet(
@@ -152,11 +149,19 @@ fun HeartScreen() {
     }
     Spacer(modifier = Modifier.height(30.dp))
     Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-      BottomSheetDropDown(text = lowBpString, modifier = Modifier.wrapContentWidth().wrapContentHeight()) {
+      BottomSheetDropDown(
+        text = lowBpString, modifier = Modifier
+          .wrapContentWidth()
+          .wrapContentHeight()
+      ) {
         showLowBpBottomSheet = true
       }
       Spacer(modifier = Modifier.height(30.dp))
-      BottomSheetDropDown(text = highBpString, modifier = Modifier.wrapContentWidth().wrapContentHeight()) {
+      BottomSheetDropDown(
+        text = highBpString, modifier = Modifier
+          .wrapContentWidth()
+          .wrapContentHeight()
+      ) {
         showHighBpBottomSheet = true
       }
     }
@@ -196,28 +201,17 @@ fun HeartScreen() {
     ) {
       thal = it
     }
-  }
-}
 
-@Composable
-fun BottomSheetDropDown(text: String, modifier: Modifier = Modifier, onActionClick: () -> Unit) {
-  Row(
-    modifier = modifier
-      .background(color = LightPaleBlue, shape = RoundedCornerShape(15.dp))
-      .clickable(
-        onClick = { onActionClick() },
-        interactionSource = remember { MutableInteractionSource() },
-        indication = rememberRipple(bounded = true)
-      )
-      .padding(vertical = 10.dp, horizontal = 10.dp),
-    horizontalArrangement = Arrangement.SpaceBetween
-  ) {
-    Text(text = text, fontFamily = PlaypenSans.regular, color = BackgroundGrey)
-    Icon(
-      imageVector = Icons.Filled.ArrowDropDownCircle,
-      contentDescription = null,
-      tint = Color.White,
-      modifier = Modifier.padding(start = 15.dp)
+    Text(
+      text = "Submit",
+      modifier = Modifier
+        .fillMaxWidth()
+        .align(Alignment.CenterHorizontally)
+        .background(color = LightPaleBlue, RoundedCornerShape(15.dp))
+        .padding(vertical = 10.dp),
+      fontFamily = AudioWideFont.fontFamily,
+      fontWeight = FontWeight.Bold,
+      color = Color.White,
     )
   }
 }

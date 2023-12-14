@@ -1,6 +1,7 @@
 package com.example.healthanalyzertracker
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -50,6 +52,7 @@ class MainActivity : ComponentActivity() {
 fun SetupNavigation(navHostController: NavHostController) {
   NavHost(navHostController, startDestination = HOME_SCREEN) {
     composable(HOME_SCREEN) {
+      val context = LocalContext.current
       HomeScreen()
       { type ->
         when (type) {
@@ -70,7 +73,7 @@ fun SetupNavigation(navHostController: NavHostController) {
           }
 
           DiseaseType.STROKE -> {
-            navHostController.navigate(STROKE_SCREEN)
+            Toast.makeText(context, "Upcoming...", Toast.LENGTH_SHORT).show()
           }
 
           DiseaseType.DIABETES -> {
