@@ -50,7 +50,7 @@ fun HealthAnalyzerTrackerTheme(
   if (!view.isInEditMode) {
     SideEffect {
       val window = (view.context as Activity).window
-      window.statusBarColor = Pink400.toArgb()
+      window.statusBarColor = LightBlueWindow.toArgb()
       WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
     }
   }
