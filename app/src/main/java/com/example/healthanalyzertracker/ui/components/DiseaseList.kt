@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.ArrowCircleRight
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -140,6 +141,7 @@ fun DiseaseList(
 
     TypeCard(
       modifier = typeCardShadow
+        .blur(2.dp, 2.dp)
         .constrainAs(strokeCard) {
           linkTo(start = parent.start, end = parent.end, bias = 0f)
           top.linkTo(heartDiseaseCard.bottom, margin = 25.dp)
