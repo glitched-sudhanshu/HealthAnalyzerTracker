@@ -127,7 +127,7 @@ fun CancerScreen() {
     }
     Spacer(modifier = Modifier.height(30.dp))
     CustomDropDownMenu(
-      suggestions = listOf("Low", "Moderate", "High", "Extreme"),
+      suggestions = listOf("No Pain", "Low", "Moderate", "High", "Extreme"),
       selectedText = painString,
       labelText = "Pain"
     ) {
