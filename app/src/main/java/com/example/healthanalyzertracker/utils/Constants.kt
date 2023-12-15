@@ -1,6 +1,8 @@
 package com.example.healthanalyzertracker.utils
 
 object Constants{
+  const val BASE_URL = "https://api.openai.com/v1/"
+  const val API_TOKEN = "https://api.openai.com/v1/"
   const val HOME_SCREEN = "home_screen"
   const val LIVER_SCREEN = "liver_screen"
   const val FETAL_SCREEN = "fetal_screen"
