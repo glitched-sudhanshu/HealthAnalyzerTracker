@@ -91,7 +91,9 @@ fun LiverScreen() {
   var hepatitisC by remember {
     mutableStateOf("Select your HepatitisC marker")
   }
-  var age = 0
+  var age by remember {
+    mutableStateOf("")
+  }
 
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -108,7 +110,7 @@ fun LiverScreen() {
         maxNumValue = 110,
         onNumChange = {
           ageString = "Age: $it"
-          age = it.toInt()
+          age = it
         }
       )
     }
@@ -279,7 +281,7 @@ fun LiverScreen() {
 }
 
 private fun checkIfValid(
-  age: Int,
+  age: String,
   alt: String,
   ast: String,
   alp: String,
@@ -295,7 +297,7 @@ private fun checkIfValid(
   hepatitisC: String,
   iron: String
 ): Boolean {
-  if (alt.isBlank() || ast.isBlank() || alp.isBlank() || ggt.isBlank() || platelets.isBlank() || rbc.isBlank() || wbc.isBlank() || bilirubin.isBlank() || albumin.isBlank() || prothrombinTime.isBlank() || hepatitisA == "Select your HepatitisA marker" || hepatitisB == "Select your HepatitisB marker" || hepatitisC == "Select your HepatitisC marker" || iron.isBlank() || age == 0) return false
+  if (alt.isBlank() || ast.isBlank() || alp.isBlank() || ggt.isBlank() || platelets.isBlank() || rbc.isBlank() || wbc.isBlank() || bilirubin.isBlank() || albumin.isBlank() || prothrombinTime.isBlank() || hepatitisA == "Select your HepatitisA marker" || hepatitisB == "Select your HepatitisB marker" || hepatitisC == "Select your HepatitisC marker" || iron.isBlank() || age == "") return false
   return true
 }
 

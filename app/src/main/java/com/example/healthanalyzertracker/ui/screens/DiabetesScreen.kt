@@ -73,7 +73,9 @@ fun DiabetesScreen() {
   var frequentInfections by remember {
     mutableStateOf("Frequent Infections")
   }
-  var age = 0
+  var age by remember {
+    mutableStateOf("")
+  }
 
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -90,7 +92,7 @@ fun DiabetesScreen() {
         maxNumValue = 110,
         onNumChange = {
           ageString = "Age: $it"
-          age = it.toInt()
+          age = it
         }
       )
     }
@@ -213,7 +215,7 @@ fun DiabetesScreen() {
 }
 
 private fun checkIfValid(
-  age: Int,
+  age: String,
   fsg: String,
   ogttFsg: String,
   ogtt2Fsg: String,
@@ -223,7 +225,7 @@ private fun checkIfValid(
   urinatingMoreOften: String,
   frequentInfections: String,
 ): Boolean {
-  if (fsg.isBlank() || ogttFsg.isBlank() || ogtt2Fsg.isBlank() || heamo.isBlank() || randomBs.isBlank() || feelingFatigued == "Feeling Fatigued" || urinatingMoreOften == "Urinating More Often" || frequentInfections == "Frequent Infections" || age == 0) return false
+  if (fsg.isBlank() || ogttFsg.isBlank() || ogtt2Fsg.isBlank() || heamo.isBlank() || randomBs.isBlank() || feelingFatigued == "Feeling Fatigued" || urinatingMoreOften == "Urinating More Often" || frequentInfections == "Frequent Infections" || age == "") return false
   return true
 }
 

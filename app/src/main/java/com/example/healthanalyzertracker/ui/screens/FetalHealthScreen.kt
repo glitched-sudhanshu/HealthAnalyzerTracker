@@ -96,9 +96,15 @@ fun FetalHealthScreen() {
   var iron by remember {
     mutableStateOf("")
   }
-  var age = 0
-  var highBp = 0
-  var lowBp = 0
+  var age by remember {
+    mutableStateOf("")
+  }
+  var highBp by remember {
+    mutableStateOf("")
+  }
+  var lowBp by remember {
+    mutableStateOf("")
+  }
 
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -115,20 +121,20 @@ fun FetalHealthScreen() {
         maxNumValue = 110,
         onNumChange = {
           ageString = "Age: $it"
-          age = it.toInt()
+          age = it
         }
       )
     }
     if (showLowBpBottomSheet) {
       BottomSheet(onDismiss = { showLowBpBottomSheet = false }, onNumChange = {
         lowBpString = "Low BP: $it bpm"
-        lowBp = it.toInt()
+        lowBp = it
       }, minNumValue = 50, maxNumValue = 250)
     }
     if (showHighBpBottomSheet) {
       BottomSheet(onDismiss = { showHighBpBottomSheet = false }, onNumChange = {
         highBpString = "High BP: $it bpm"
-        highBp = it.toInt()
+        highBp = it
       }, minNumValue = 50, maxNumValue = 250)
     }
     Text(
@@ -281,7 +287,7 @@ fun FetalHealthScreen() {
 }
 
 private fun checkIfValid(
-  age: Int,
+  age: String,
   afp: String,
   hcg: String,
   estriol: String,
@@ -291,12 +297,12 @@ private fun checkIfValid(
   platelets: String,
   glucose: String,
   calcium: String,
-  lowBp: Int,
-  highBp: Int,
+  lowBp: String,
+  highBp: String,
   tsh: String,
   iron: String
 ): Boolean {
-  if (afp.isBlank() || hcg.isBlank() || estriol.isBlank() || inhibin.isBlank() || rbc.isBlank() || wbc.isBlank() || platelets.isBlank() || glucose.isBlank() || calcium.isBlank() || lowBp == 0 || highBp == 0 || tsh.isBlank() || iron.isBlank() || age == 0) return false
+  if (afp.isBlank() || hcg.isBlank() || estriol.isBlank() || inhibin.isBlank() || rbc.isBlank() || wbc.isBlank() || platelets.isBlank() || glucose.isBlank() || calcium.isBlank() || lowBp == "" || highBp == "" || tsh.isBlank() || iron.isBlank() || age == "") return false
   return true
 }
 

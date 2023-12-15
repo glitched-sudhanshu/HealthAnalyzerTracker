@@ -72,6 +72,9 @@ fun CancerScreen() {
   var textureString by remember {
     mutableStateOf("Changes in Breast skin texture?")
   }
+  var age by remember {
+    mutableStateOf("")
+  }
 
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -87,6 +90,7 @@ fun CancerScreen() {
         maxNumValue = 110,
         onNumChange = {
           ageString = "Age: $it"
+          age = it
         }
       )
     }
@@ -206,7 +210,7 @@ fun CancerScreen() {
         .clickable(
           onClick = {
             if (!checkIfValid(
-                ageString,
+                age,
                 lumpString,
                 sizeString,
                 rednessString,
@@ -252,7 +256,7 @@ private fun checkIfValid(
   dischargeString: String,
   textureString: String
 ): Boolean {
-  if (ageString == "Select your age" || lumpString == "Lumps in breast?" || sizeString == "Change in size of Breasts?" || rednessString == "Change in size of Breasts?" || painString == "Frequent pain in Breasts?" || appearanceString == "Change in appearance?" || dischargeString == "Fluid Discharge (not Milk)?" || textureString == "Changes in Breast skin texture?") return false
+  if (ageString == "" || lumpString == "Lumps in breast?" || sizeString == "Change in size of Breasts?" || rednessString == "Change in size of Breasts?" || painString == "Frequent pain in Breasts?" || appearanceString == "Change in appearance?" || dischargeString == "Fluid Discharge (not Milk)?" || textureString == "Changes in Breast skin texture?") return false
 
   return true
 
