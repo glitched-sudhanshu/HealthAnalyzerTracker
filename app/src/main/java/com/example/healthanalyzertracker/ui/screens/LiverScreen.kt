@@ -1,16 +1,19 @@
 package com.example.healthanalyzertracker.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,66 +22,84 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.healthanalyzertracker.ui.components.BottomSheet
 import com.example.healthanalyzertracker.ui.components.BottomSheetDropDown
 import com.example.healthanalyzertracker.ui.components.CustomDropDownMenu
+import com.example.healthanalyzertracker.ui.components.InputField
 import com.example.healthanalyzertracker.ui.theme.AudioWideFont
 import com.example.healthanalyzertracker.ui.theme.BackgroundGrey
 import com.example.healthanalyzertracker.ui.theme.DarkPaleBlue
+import com.example.healthanalyzertracker.ui.theme.LightPaleBlue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun LiverScreen() {
+  val context = LocalContext.current
   var showAgeBottomSheet by remember { mutableStateOf(false) }
-  var showPainBottomSheet by remember { mutableStateOf(false) }
-  var showHighBpBottomSheet by remember { mutableStateOf(false) }
-  var showLowBpBottomSheet by remember { mutableStateOf(false) }
-  var showMaxHeartRateBottomSheet by remember { mutableStateOf(false) }
   var ageString by remember {
     mutableStateOf("Select your age")
   }
-  var gender by remember {
-    mutableStateOf("Select your gender")
+  var alt by remember {
+    mutableStateOf("")
   }
-  var painString by remember {
-    mutableStateOf("Select your chest pain")
+  var ast by remember {
+    mutableStateOf("")
   }
-  var highBpString by remember {
-    mutableStateOf("Select your high BP")
+  var alp by remember {
+    mutableStateOf("")
   }
-  var lowBpString by remember {
-    mutableStateOf("Select your low BP")
+  var ggt by remember {
+    mutableStateOf("")
   }
-  var fastingBloodSugar by remember {
-    mutableStateOf("Select your Fasting Blood Sugar")
+  var rbc by remember {
+    mutableStateOf("")
   }
-  var cardiographicResult by remember {
-    mutableStateOf("Select your Electrocardiographic Result")
+  var wbc by remember {
+    mutableStateOf("")
   }
-  var maxHeartRateString by remember {
-    mutableStateOf("Select your Maximum Heart Rate")
+  var platelets by remember {
+    mutableStateOf("")
   }
-  var majorVessels by remember {
-    mutableStateOf("Select your No. of major vessels")
+  var bilirubin by remember {
+    mutableStateOf("")
   }
-  var thal by remember {
-    mutableStateOf("Select your Thal")
+  var albumin by remember {
+    mutableStateOf("")
+  }
+  var prothrombinTime by remember {
+    mutableStateOf("")
+  }
+  var iron by remember {
+    mutableStateOf("")
+  }
+  var hepatitisA by remember {
+    mutableStateOf("Select your HepatitisA marker")
+  }
+  var hepatitisB by remember {
+    mutableStateOf("Select your HepatitiB marker")
+  }
+  var hepatitisC by remember {
+    mutableStateOf("Select your HepatitisC marker")
   }
   var age = 0
-  var chestPain = 0
-  var highBp = 0
-  var lowBp = 0
-  var maxHeartRate = 0
 
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = Modifier
       .background(color = BackgroundGrey)
       .padding(horizontal = 16.dp, vertical = 12.dp)
-      .fillMaxSize(),
+      .fillMaxSize()
+      .verticalScroll(rememberScrollState()),
   ) {
     if (showAgeBottomSheet) {
       BottomSheet(
@@ -90,33 +111,6 @@ fun LiverScreen() {
           age = it.toInt()
         }
       )
-    }
-    if (showPainBottomSheet) {
-      BottomSheet(onDismiss = { showPainBottomSheet = false },
-        minNumValue = 0,
-        maxNumValue = 10,
-        onNumChange = {
-          painString = "Chest pain: $it"
-          chestPain = it.toInt()
-        })
-    }
-    if (showLowBpBottomSheet) {
-      BottomSheet(onDismiss = { showLowBpBottomSheet = false }, onNumChange = {
-        lowBpString = "Low BP: $it bpm"
-        lowBp = it.toInt()
-      }, minNumValue = 50, maxNumValue = 250)
-    }
-    if (showHighBpBottomSheet) {
-      BottomSheet(onDismiss = { showHighBpBottomSheet = false }, onNumChange = {
-        highBpString = "High BP: $it bpm"
-        highBp = it.toInt()
-      }, minNumValue = 50, maxNumValue = 250)
-    }
-    if (showMaxHeartRateBottomSheet) {
-      BottomSheet(onDismiss = { showMaxHeartRateBottomSheet = false }, onNumChange = {
-        maxHeartRateString = "Max Heart Rate: $it bpm"
-        maxHeartRate = it.toInt()
-      }, minNumValue = 10, maxNumValue = 250)
     }
     Text(
       "Enter all the details",
@@ -130,73 +124,182 @@ fun LiverScreen() {
       showAgeBottomSheet = true
     }
     Spacer(modifier = Modifier.height(30.dp))
+    InputField(
+      text = "Alanine Aminotransferase",
+      label = "ALT",
+      onTextChange = { alt = it },
+      modifier = Modifier.fillMaxWidth()
+    )
+    Spacer(modifier = Modifier.height(30.dp))
+    InputField(
+      text = "Aspartate Aminotransferase",
+      label = "AST",
+      onTextChange = { ast = it },
+      modifier = Modifier.fillMaxWidth()
+    )
+    Spacer(modifier = Modifier.height(30.dp))
+    InputField(
+      text = "Alkaline Phosphatase",
+      label = "ALP",
+      onTextChange = { alp = it },
+      modifier = Modifier.fillMaxWidth()
+    )
+    Spacer(modifier = Modifier.height(30.dp))
+    InputField(
+      text = "Gamma-Glutamyl Transferase",
+      label = "GGT",
+      onTextChange = { ggt = it },
+      modifier = Modifier.fillMaxWidth()
+    )
+    Spacer(modifier = Modifier.height(30.dp))
+    InputField(
+      text = "Red Blood Cells (RBC, in K)",
+      label = "RBC",
+      onTextChange = { rbc = it },
+      modifier = Modifier.fillMaxWidth()
+    )
+    Spacer(modifier = Modifier.height(30.dp))
+    InputField(
+      text = "White Blood Cells (WBC, in K)",
+      label = "WBC",
+      onTextChange = { wbc = it },
+      modifier = Modifier.fillMaxWidth()
+    )
+    Spacer(modifier = Modifier.height(30.dp))
+    InputField(
+      text = "Platelets (in K)",
+      label = "Platelets",
+      onTextChange = { platelets = it },
+      modifier = Modifier.fillMaxWidth()
+    )
+    Spacer(modifier = Modifier.height(30.dp))
+    InputField(
+      text = "Bilirubin",
+      label = "Bilirubin",
+      onTextChange = { bilirubin = it },
+      modifier = Modifier.fillMaxWidth()
+    )
+    Spacer(modifier = Modifier.height(30.dp))
+    InputField(
+      text = "Albumin",
+      label = "Albumin",
+      onTextChange = { albumin = it },
+      modifier = Modifier.fillMaxWidth()
+    )
+    Spacer(modifier = Modifier.height(30.dp))
+    InputField(
+      text = "ProthrombinTime",
+      label = "ProthrombinTime",
+      onTextChange = { prothrombinTime = it },
+      modifier = Modifier.fillMaxWidth()
+    )
+    Spacer(modifier = Modifier.height(30.dp))
+    InputField(
+      text = "Iron Levels",
+      label = "Ferritin",
+      onTextChange = { iron = it },
+      modifier = Modifier.fillMaxWidth()
+    )
+    Spacer(modifier = Modifier.height(30.dp))
     CustomDropDownMenu(
-      suggestions = listOf("Male", "Female"),
-      selectedText = gender,
-      labelText = "Gender"
+      suggestions = listOf("Yes", "No"),
+      selectedText = hepatitisA,
+      labelText = "HepatitisA "
     ) {
-      gender = it
-    }
-    Spacer(modifier = Modifier.height(30.dp))
-    BottomSheetDropDown(text = painString, modifier = Modifier.fillMaxWidth()) {
-      showPainBottomSheet = true
-    }
-    Spacer(modifier = Modifier.height(30.dp))
-    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-      BottomSheetDropDown(text = lowBpString, modifier = Modifier
-        .wrapContentWidth()
-        .wrapContentHeight()) {
-        showLowBpBottomSheet = true
-      }
-      Spacer(modifier = Modifier.height(30.dp))
-      BottomSheetDropDown(text = highBpString, modifier = Modifier
-        .wrapContentWidth()
-        .wrapContentHeight()) {
-        showHighBpBottomSheet = true
-      }
+      hepatitisA = it
     }
     Spacer(modifier = Modifier.height(30.dp))
     CustomDropDownMenu(
-      suggestions = listOf(">120 mg/dl", "<120 mg/dl"),
-      selectedText = fastingBloodSugar,
-      labelText = "Fasting Blood Sugar"
+      suggestions = listOf("Yes", "No"),
+      selectedText = hepatitisB,
+      labelText = "HepatitisB "
     ) {
-      fastingBloodSugar = it
+      hepatitisB = it
     }
     Spacer(modifier = Modifier.height(30.dp))
     CustomDropDownMenu(
-      suggestions = listOf("0", "1", "2"),
-      selectedText = cardiographicResult,
-      labelText = "Electro-Cardiographic result"
+      suggestions = listOf("Yes", "No"),
+      selectedText = hepatitisC,
+      labelText = "HepatitisC "
     ) {
-      cardiographicResult = it
+      hepatitisC = it
     }
     Spacer(modifier = Modifier.height(30.dp))
-    BottomSheetDropDown(text = maxHeartRateString, modifier = Modifier.fillMaxWidth()) {
-      showMaxHeartRateBottomSheet = true
-    }
-    Spacer(modifier = Modifier.height(30.dp))
-    CustomDropDownMenu(
-      suggestions = listOf("0", "1", "2", "3"),
-      selectedText = majorVessels,
-      labelText = "No. of major vessels"
-    ) {
-      majorVessels = it
-    }
-    Spacer(modifier = Modifier.height(30.dp))
-    CustomDropDownMenu(
-      suggestions = listOf("Normal", "Fixed Defect"),
-      selectedText = thal,
-      labelText = "Thal"
-    ) {
-      thal = it
-    }
+    Text(
+      text = "Submit",
+      modifier = Modifier
+        .fillMaxWidth()
+        .align(Alignment.CenterHorizontally)
+        .background(color = LightPaleBlue, RoundedCornerShape(15.dp))
+        .clickable(
+          onClick = {
+            if (!checkIfValids(
+                age = age,
+                alt = alt,
+                ast = ast,
+                alp = alp,
+                ggt = ggt,
+                rbc = rbc,
+                wbc = wbc,
+                platelets = platelets,
+                bilirubin,
+                albumin,
+                prothrombinTime,
+                hepatitisA,
+                hepatitisB,
+                hepatitisC,
+                iron
+              )
+            ) {
+              Toast
+                .makeText(context, "Fill all fields!", Toast.LENGTH_LONG)
+                .show()
+            } else CoroutineScope(Dispatchers.Main).launch {
+              delay(5000)
+              Toast
+                .makeText(
+                  context,
+                  "Error while calling API. Something went wrong!",
+                  Toast.LENGTH_LONG
+                )
+                .show()
+            }
+          },
+          interactionSource = remember { MutableInteractionSource() },
+          indication = rememberRipple(bounded = true)
+        )
+        .padding(vertical = 10.dp),
+      fontFamily = AudioWideFont.fontFamily,
+      textAlign = TextAlign.Center,
+      fontWeight = FontWeight.Bold,
+      color = Color.White,
+    )
   }
+}
+
+private fun checkIfValids(
+  age: Int,
+  alt: String,
+  ast: String,
+  alp: String,
+  ggt: String,
+  rbc: String,
+  wbc: String,
+  platelets: String,
+  bilirubin: String,
+  albumin: String,
+  prothrombinTime: String,
+  hepatitisA: String,
+  hepatitisB: String,
+  hepatitisC: String,
+  iron: String
+): Boolean {
+  if (alt.isBlank() || ast.isBlank() || alp.isBlank() || ggt.isBlank() || platelets.isBlank() || rbc.isBlank() || wbc.isBlank() || bilirubin.isBlank() || albumin.isBlank() || prothrombinTime.isBlank() || hepatitisA == "Select your HepatitisA marker" || hepatitisB == "Select your HepatitisB marker" || hepatitisC == "Select your HepatitisC marker" || iron.isBlank() || age == 0) return false
+  return true
 }
 
 @Preview
 @Composable
-fun PreviewLiverScreen()
-{
+fun PreviewLiverScreen() {
   LiverScreen()
 }

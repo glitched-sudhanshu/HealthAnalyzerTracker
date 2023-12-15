@@ -10,15 +10,13 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class ApiServiceImpl {
 
-  private val token = "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"
-
+  private val token = "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"
   private var client: OkHttpClient = OkHttpClient.Builder().addInterceptor { chain ->
     val newRequest: Request =
       chain.request().newBuilder().addHeader("Content-Type", "application/json")
         .addHeader("Authorization", "Bearer $token").build()
     chain.proceed(newRequest)
   }.build()
-
   private val api = Retrofit.Builder().client(client).baseUrl(BASE_URL)
     .addConverterFactory(GsonConverterFactory.create()).build().create(ApiService::class.java)
 

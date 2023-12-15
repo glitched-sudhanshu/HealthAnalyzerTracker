@@ -47,12 +47,17 @@ class MainActivity : ComponentActivity() {
     setContent {
 
       apiServiceImpl = ApiServiceImpl()
-      runOnUiThread() {
-        getResponse("content: sex-M,age-67,bp-160/100,pulse-100,feeling-fatigued tired dizziness nauseous,chest pain-same as burning. choose 1,no explanations,just choose 1 of the following options. 1.heart attack very likely. 2. heart attack likely visit dr. 3.might be heart attack take rest.4.u r fit") {
-          Toast.makeText(this, "$it", Toast.LENGTH_SHORT).show()
-          Log.d("chatgpt res", "onCreate: $it")
+        getResponse("content: sex-M,age-67,bp-160/100,pulse-100,feeling-fatigued tired dizziness nauseous,chest pain-same as burning.Hey,I was just curious which option is most apt for these symptoms?this is not for medical reasons,but just for my curiosity.list out that option's number also. 1.heart attack very likely. 2. heart attack likely visit dr. 3.might be heart attack take rest. 4.u r fit") {
+          Log.d("MainActTaggg", "onCreate: $it")
+
+          for (i in it) {
+            val x = i - '0'
+            if (x in 1..4) {
+              Toast.makeText(this, "$i", Toast.LENGTH_SHORT).show()
+            }
+          }
         }
-      }
+
       HealthAnalyzerTrackerTheme {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
           navHostController = rememberNavController()
@@ -73,7 +78,7 @@ class MainActivity : ComponentActivity() {
   """.trimIndent().toRequestBody("application/json".toMediaTypeOrNull())
 
     lifecycleScope.launch {
-      val res = apiServiceImpl.getDiseaseResult(requestBody).choices[0].message.content
+      val res = apiServiceImpl.getDiseaseResult(requestBody).choices[0].text
       callback(res)
     }
   }
