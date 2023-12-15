@@ -225,6 +225,7 @@ fun LiverScreen() {
       hepatitisC = it
     }
     Spacer(modifier = Modifier.height(30.dp))
+    Spacer(modifier = Modifier.height(30.dp))
     Text(
       text = "Submit",
       modifier = Modifier
@@ -233,7 +234,7 @@ fun LiverScreen() {
         .background(color = LightPaleBlue, RoundedCornerShape(15.dp))
         .clickable(
           onClick = {
-            if (!checkIfValids(
+            if (!checkIfValid(
                 age = age,
                 alt = alt,
                 ast = ast,
@@ -277,7 +278,7 @@ fun LiverScreen() {
   }
 }
 
-private fun checkIfValids(
+private fun checkIfValid(
   age: Int,
   alt: String,
   ast: String,
