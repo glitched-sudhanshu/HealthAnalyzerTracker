@@ -1,5 +1,6 @@
 package com.example.healthanalyzertracker.ui.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,8 +19,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,18 +43,28 @@ import com.example.healthanalyzertracker.ui.theme.AudioWideFont
 import com.example.healthanalyzertracker.ui.theme.BackgroundGrey
 import com.example.healthanalyzertracker.ui.theme.DarkPaleBlue
 import com.example.healthanalyzertracker.ui.theme.LightPaleBlue
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun HeartScreen() {
+
+  val context = LocalContext.current
   var showAgeBottomSheet by remember { mutableStateOf(false) }
   var showPainBottomSheet by remember { mutableStateOf(false) }
   var showHighBpBottomSheet by remember { mutableStateOf(false) }
   var showLowBpBottomSheet by remember { mutableStateOf(false) }
   var showMaxHeartRateBottomSheet by remember { mutableStateOf(false) }
+  var showLoader by remember { mutableStateOf(false) }
+
+  LaunchedEffect(key1 = showLoader){
+    if(showLoader){
+      delay(3000)
+      Toast.makeText(context, "Slow internet connection! Taking too long!!", Toast.LENGTH_SHORT).show()
+      delay(10000)
+      showLoader = false
+    }
+  }
+
   var ageString by remember {
     mutableStateOf("Select your age")
   }
@@ -82,12 +95,21 @@ fun HeartScreen() {
   var thal by remember {
     mutableStateOf("Select your Thalassemia")
   }
-  var age = 0
-  var chestPain = 0
-  var highBp = 0
-  var lowBp = 0
-  var maxHeartRate = 0
-  val context = LocalContext.current
+  var age by remember {
+    mutableStateOf("")
+  }
+  var chestPain by remember {
+    mutableStateOf("")
+  }
+  var highBp by remember {
+    mutableStateOf("")
+  }
+  var lowBp by remember {
+    mutableStateOf("")
+  }
+  var maxHeartRate by remember {
+    mutableStateOf("")
+  }
 
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -104,7 +126,7 @@ fun HeartScreen() {
         maxNumValue = 110,
         onNumChange = {
           ageString = "Age: $it"
-          age = it.toInt()
+          age = it
         }
       )
     }
@@ -114,25 +136,25 @@ fun HeartScreen() {
         maxNumValue = 10,
         onNumChange = {
           painString = "Chest pain: $it"
-          chestPain = it.toInt()
+          chestPain = it
         })
     }
     if (showLowBpBottomSheet) {
       BottomSheet(onDismiss = { showLowBpBottomSheet = false }, onNumChange = {
         lowBpString = "Low BP: $it bpm"
-        lowBp = it.toInt()
+        lowBp = it
       }, minNumValue = 50, maxNumValue = 250)
     }
     if (showHighBpBottomSheet) {
       BottomSheet(onDismiss = { showHighBpBottomSheet = false }, onNumChange = {
         highBpString = "High BP: $it bpm"
-        highBp = it.toInt()
+        highBp = it
       }, minNumValue = 50, maxNumValue = 250)
     }
     if (showMaxHeartRateBottomSheet) {
       BottomSheet(onDismiss = { showMaxHeartRateBottomSheet = false }, onNumChange = {
         maxHeartRateString = "Max Heart Rate: $it bpm"
-        maxHeartRate = it.toInt()
+        maxHeartRate = it
       }, minNumValue = 10, maxNumValue = 250)
     }
     Text(
@@ -212,6 +234,11 @@ fun HeartScreen() {
     ) {
       thal = it
     }
+
+    if(showLoader){
+      Spacer(modifier = Modifier.height(30.dp))
+      CircularProgressIndicator()
+    }
     Spacer(modifier = Modifier.height(30.dp))
     Spacer(modifier = Modifier.height(30.dp))
     Text(
@@ -222,17 +249,24 @@ fun HeartScreen() {
         .background(color = LightPaleBlue, RoundedCornerShape(15.dp))
         .clickable(
           onClick = {
-            if(!checkIfValid(age, gender, chestPain, lowBp, highBp, fastingBloodSugar, cardiographicResult, maxHeartRate, majorVessels, thal)){
-
+            if (!checkIfValid(
+                age,
+                gender,
+                chestPain,
+                lowBp,
+                highBp,
+                fastingBloodSugar,
+                cardiographicResult,
+                maxHeartRate,
+                majorVessels,
+                thal
+              )
+            ) {
               Toast
                 .makeText(context, "Fill all fields!", Toast.LENGTH_LONG)
                 .show()
-            }
-            else CoroutineScope(Dispatchers.Main).launch {
-              delay(5000)
-              Toast
-                .makeText(context, "Error while calling API. Something went wrong!", Toast.LENGTH_LONG)
-                .show()
+            } else {
+              showLoader = true
             }
           },
           interactionSource = remember { MutableInteractionSource() },
@@ -248,18 +282,19 @@ fun HeartScreen() {
 }
 
 private fun checkIfValid(
-  age: Int,
+  age: String,
   gender: String,
-  chestPain: Int,
-  lowBp: Int,
-  highBp: Int,
+  chestPain: String,
+  lowBp: String,
+  highBp: String,
   fastingBloodSugar: String,
   cardiographicResult: String,
-  maxHeartRate: Int,
+  maxHeartRate: String,
   majorVessels: String,
   thal: String
 ): Boolean {
-  if(age==0 || gender == "Select your gender" || chestPain == 0 || lowBp == 0 || highBp == 0 || maxHeartRate == 0 || fastingBloodSugar == "Select your Fasting Blood Sugar" || cardiographicResult == "Select your Electrocardiographic Result" || majorVessels == "Select your No. of major vessels" || thal == "Select your Thalassemia") return false
+  Log.d("check please", "checkIfValid: $gender \n $age  \n $lowBp  \n  $fastingBloodSugar")
+  if(age=="" || gender == "Select your gender" || chestPain == "" || lowBp == "" || highBp == "" || maxHeartRate == "" || fastingBloodSugar == "Select your Fasting Blood Sugar" || cardiographicResult == "Select your Electrocardiographic Result" || majorVessels == "Select your No. of major vessels" || thal == "Select your Thalassemia") return false
   return true
 }
 
